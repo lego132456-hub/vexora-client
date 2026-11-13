@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Vexora</title>
+<style>
+:root{--bg:#f3f6f1;--surface:#fff;--text:#17211a;--muted:#5a6b5f;--border:#d8e2d6;--accent:#2f9e44;--accent-text:#fff;--header:#fff;--gold:#b7791f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1511;--surface:#18211b;--text:#e8f0ea;--muted:#9bb0a0;--border:#2a382d;--accent:#3ddc63;--accent-text:#06210f;--header:#121a14;--gold:#f6c453}}
+:root[data-theme="dark"]{--bg:#0f1511;--surface:#18211b;--text:#e8f0ea;--muted:#9bb0a0;--border:#2a382d;--accent:#3ddc63;--accent-text:#06210f;--header:#121a14;--gold:#f6c453}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;overflow:hidden;padding-top:env(safe-area-inset-top,0px)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+aside{width:208px;background:var(--header);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 12px;gap:4px;flex:none}
+aside .brand{display:flex;align-items:center;gap:10px;margin:2px 6px 18px}aside .brand img{height:40px}aside .brand b{font-size:1.3rem;font-weight:900;letter-spacing:.5px}.brand i,.wm i{font-style:normal;color:var(--accent)}
+.nav{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;color:var(--muted);font-weight:700;text-align:left}
+.nav svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav:hover{background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--text)}
+.nav.on{background:var(--accent);color:var(--accent-text)}
+.sp{flex:1}
+.acc{border:1px solid var(--border);border-radius:12px;padding:10px;font-size:13px;display:flex;flex-direction:column;gap:8px}
+.acc b{font-size:14px;overflow:hidden;text-overflow:ellipsis}
+
+main{flex:1;min-width:0;overflow-y:auto;padding:22px 26px 40px}
+section{display:none;max-width:1050px;margin:auto}section.on{display:block}
+h2{font-size:1.7rem;font-weight:900;line-height:1.15}
+h3{font-size:1.02rem}
+.sub{color:var(--muted);margin:2px 0 18px}
+
+.btn{background:var(--accent);color:var(--accent-text);border-radius:10px;padding:10px 18px;font-weight:800}
+.btn:hover{filter:brightness(1.08)}.btn:active{transform:translateY(1px)}
+.btn.sec{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn.sm{padding:6px 14px;font-size:.88rem}
+.btn.ok{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);border:1px solid var(--accent)}
+.btn.bad{background:transparent;border:1px solid #d64545;color:#d64545}
+.btn[disabled]{opacity:.6;pointer-events:none}
+select,input[type=text],input[type=password],input[type=number],textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:inherit}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:7px 15px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-weight:700;font-size:.9rem}
+.chip:hover{color:var(--text)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}
+.chip[disabled]{opacity:.45;cursor:not-allowed}
+
+/* GRAJ */
+.stage{min-height:calc(100vh - 92px);border-radius:18px;background:linear-gradient(135deg,#1b6b2f,#2f9e44 55%,#7bd88f);color:#fff;display:flex;flex-direction:column;padding:22px;position:relative;overflow:hidden}
+.stage::before,.stage::after{content:"";position:absolute;border-radius:14px;opacity:.14;background:#fff;transform:rotate(18deg)}
+.stage::before{width:170px;height:170px;left:-40px;top:60px}.stage::after{width:240px;height:240px;right:-70px;bottom:90px;transform:rotate(-14deg)}
+.mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;position:relative;z-index:1}
+.mid img{height:min(150px,22vh);width:auto;filter:drop-shadow(0 8px 0 rgba(0,0,0,.18))}.wm{font-size:clamp(2.3rem,8vw,3.6rem);font-weight:900;letter-spacing:1px;line-height:1.05;text-shadow:0 4px 0 rgba(0,0,0,.2)}.stage .wm i{color:#ffd93b}
+.mid p{opacity:.95;font-weight:600;min-height:1.5em}
+.dock{position:relative;z-index:1;background:var(--surface);color:var(--text);border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center;max-width:620px;width:100%;margin:0 auto;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.dock label{font-size:.75rem;color:var(--muted);font-weight:700;display:block;margin-bottom:3px}
+.dock .v{flex:1;min-width:0}
+.dock select{font-weight:700}
+#playBtn{align-self:flex-end;min-width:150px;font-size:1.35rem;padding:13px 26px;border-radius:12px;font-weight:900;letter-spacing:.5px}
+.bar{position:absolute;left:14px;right:14px;bottom:0;height:4px;background:transparent;border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+
+.con{position:relative;z-index:1;max-width:620px;width:100%;margin:12px auto 0;background:var(--surface);color:var(--text);border:2px solid var(--accent);border-radius:14px;overflow:hidden;font:12px/1.55 ui-monospace,Consolas,monospace;box-shadow:0 6px 24px rgba(0,0,0,.2)}
+.conh{width:100%;display:flex;justify-content:space-between;padding:10px 14px;font-weight:800;background:var(--accent);color:var(--accent-text)}
+.conb{display:none;background:color-mix(in srgb,var(--accent) 7%,var(--surface))}.con.open .conb{display:block}
+.cbtn{display:flex;gap:8px;padding:10px 14px 0}
+#conOut{height:min(240px,30vh);overflow:auto;padding:10px 14px;white-space:pre-wrap;word-break:break-all;margin:0}
+#conOut div{border-left:3px solid var(--accent);padding-left:8px;margin-bottom:1px}
+.cerr{color:#d64545;border-left-color:#d64545!important}.cdim{color:var(--muted)}.cdim{border-left-color:var(--border)!important}
+/* MODY */
+.top{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:3px}
+.seg button{padding:7px 16px;border-radius:9px;font-weight:700;color:var(--muted)}
+.seg button.on{background:var(--accent);color:var(--accent-text)}
+button.tag{cursor:pointer}.tag{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);padding:3px 12px;border-radius:99px;font-weight:800;font-size:.88rem}
+.search{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.search input{flex:1;min-width:180px}.search select{width:auto;min-width:170px}
+.cats{margin-bottom:16px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}.cats::-webkit-scrollbar{display:none}.cats .chip{flex:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;gap:12px}
+.card .ic{width:56px;height:56px;border-radius:12px;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);flex:none;display:grid;place-items:center;font-weight:900;font-size:1.4rem;object-fit:cover}
+.card .bd{min-width:0;flex:1}
+.card .t{font-weight:800}
+.card p{color:var(--muted);font-size:.86rem;margin:2px 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.meta{font-size:.78rem;color:var(--muted);margin-right:auto}
+.pill{font-size:.7rem;background:var(--bg);border:1px solid var(--border);border-radius:99px;padding:1px 9px}
+.empty{color:var(--muted);padding:26px 0}
+.empty .btn{margin-top:10px}
+.ilist .it{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 8px 8px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;justify-content:space-between;word-break:break-all}
+
+/* USTAWIENIA */
+.stabs{margin-bottom:18px}
+.pane{display:grid;gap:12px}
+.box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px}
+.box .d{color:var(--muted);font-size:.86rem;margin:1px 0 12px}
+.profiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.prof{text-align:left;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:14px}
+.prof:hover{border-color:var(--accent)}
+.prof b{display:block;font-size:1.02rem}.prof span{color:var(--muted);font-size:.84rem}
+.prof.gold{border-color:var(--gold)}
+.srow{display:grid;grid-template-columns:1fr auto;gap:2px 12px;margin-bottom:14px}
+.srow:last-child{margin-bottom:0}
+.srow .val{font-weight:900;color:var(--accent)}
+.srow input[type=range]{grid-column:1/3;width:100%;accent-color:var(--accent)}
+.tr{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0;border-top:1px solid var(--border)}
+.tr:first-child{border-top:0;padding-top:0}.tr:last-child{padding-bottom:0}
+.tr small{display:block;color:var(--muted)}
+.tg{width:48px;height:28px;border-radius:99px;background:var(--border);position:relative;flex:none}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--surface);transition:transform .15s}
+.tg.on{background:var(--accent)}.tg.on::after{transform:translateX(20px)}
+textarea{height:84px;margin-top:10px;font:12px ui-monospace,Consolas,monospace}
+.two{display:flex;gap:10px;align-items:center}.two input{width:110px}
+.modlist{display:flex;gap:6px;flex-wrap:wrap}
+.modlist span{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);border-radius:99px;padding:2px 11px;font-size:.8rem;font-weight:700}
+.warn{background:color-mix(in srgb,var(--gold) 16%,transparent);border:1px solid var(--gold);border-radius:10px;padding:9px 12px;font-size:.86rem;margin-top:10px}
+
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}.ov.open{display:flex}
+.md{background:var(--surface);border:1px solid var(--border);border-radius:16px;max-width:440px;width:100%;padding:22px;max-height:90vh;overflow:auto;display:grid;gap:12px}
+.opt{text-align:left;border:2px solid var(--border);border-radius:14px;padding:14px;display:block;width:100%;background:var(--surface)}
+button.opt:hover{border-color:var(--accent)}.opt b{display:block;font-size:1.05rem}.opt span{color:var(--muted);font-size:.86rem;display:block;margin-bottom:8px}
+.opt .two input{flex:1;width:auto}
+#toast{position:fixed;bottom:20px;right:20px;max-width:340px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;box-shadow:0 6px 24px rgba(0,0,0,.25);transform:translateY(140px);transition:transform .25s;z-index:9}
+#toast.show{transform:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:760px){
+body{flex-direction:column-reverse}
+aside{width:100%;flex-direction:row;justify-content:space-around;border-right:0;border-top:1px solid var(--border);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+aside .brand,.acc,.sp{display:none}
+.nav{flex-direction:column;gap:2px;padding:6px 18px;font-size:.78rem}
+main{padding:14px 14px 24px}
+.stage{min-height:calc(100vh - 150px)}
+.dock{flex-direction:column;align-items:stretch}#playBtn{width:100%}
+.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand"><img src="assets/logo.svg" alt=""><b><i>V</i>EXORA</b></div>
+  <button class="nav on" data-p="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>Graj</button>
+  <button class="nav" data-p="mods"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>Mody</button>
+  <button class="nav" data-p="set"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Ustawienia</button>
+  <div class="sp"></div>
+  <div class="acc"><b id="accName">Brak konta</b><button class="btn sm" id="loginBtn">Zaloguj się</button></div>
+</aside>
+
+<main>
+  <section id="play" class="on">
+    <div class="stage">
+      <div class="mid"><img src="assets/logo.svg" alt=""><h1 class="wm"><i>V</i>EXORA</h1><p id="status">Wybierz wersję i graj.</p></div>
+      <div class="dock">
+        <div class="v"><label for="ver">Wersja</label><select id="ver"></select></div>
+        <button class="btn" id="playBtn">GRAJ</button>
+        <div class="bar"><i id="barFill"></i></div>
+      </div>
+      <div class="con" id="con">
+        <button class="conh" id="conT" aria-expanded="false"><span>▸ Konsola</span><span id="conN"></span></button>
+        <div class="conb"><div class="cbtn"><button class="btn sec sm" id="conCopy">Kopiuj</button><button class="btn sec sm" id="conClr">Wyczyść</button></div><pre id="conOut" aria-live="polite"></pre></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mods">
+    <h2>Mody</h2><p class="sub">Pobieraj mody z Modrinth i CurseForge jednym kliknięciem.</p>
+    <div class="top">
+      <div class="seg" id="src"><button class="on" data-v="modrinth">Modrinth</button><button data-v="curseforge">CurseForge</button></div>
+      <button class="tag" id="ctxTag" title="Zmień silnik w Ustawieniach"></button>
+      <button class="btn sec sm" id="mineBtn" style="margin-left:auto">Zainstalowane</button>
+    </div>
+    <div id="browse">
+      <div class="search"><input type="text" id="q" placeholder="Szukaj moda, np. Sodium" aria-label="Szukaj moda"><button class="btn" id="searchBtn">Szukaj</button></div>
+      <div class="chips cats" id="cats"></div>
+      <div class="grid" id="results"></div>
+    </div>
+    <div id="mine" style="display:none"><div class="ilist" id="mineList"></div><button class="btn sec" id="openBtn">Otwórz folder gry</button></div>
+  </section>
+
+  <section id="set">
+    <h2>Ustawienia</h2><p class="sub">Zmiany zapisują się od razu.</p>
+    <div class="chips stabs" id="stabs"></div>
+    <div class="pane" id="setBody"></div>
+  </section>
+</main>
+<div class="ov" id="welcome"><div class="md">
+  <h2>Jak chcesz grać?</h2><p class="sub">Wybierz konto. Zmienisz je później w Ustawieniach.</p>
+  <button class="opt" id="wPrem"><b>Zaloguj się (Premium)</b><span>Konto Microsoft z Minecraftem Java. Zapamiętamy logowanie.</span></button>
+  <div class="opt"><b>Graj offline</b><span>Bez zakupu gry. Wpisz nick.</span>
+    <div class="two"><input type="text" id="wNick" maxlength="16" placeholder="Twój nick" aria-label="Nick"><button class="btn" id="wOff">Graj</button></div></div>
+  <button class="btn sec sm" id="wClose">Później</button>
+</div></div>
+<div id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clean=e=>e.message.replace(/^Error invoking remote method '\w+': Error: /,'');
+const NAMES={vanilla:'Vanilla',fabric:'Fabric',forge:'Forge',neoforge:'NeoForge'};
+const CATS=[['','Wszystkie'],['optimization','Optymalizacja'],['adventure','Przygodowe'],['magic','Magia'],['technology','Technologia'],['decoration','Dekoracje'],['utility','Narzędzia'],['worldgen','Świat'],['mobs','Potwory']];
+const CATPL=Object.fromEntries(CATS.filter(c=>c[0]));
+const G1='-XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1';
+const JVM={std:'',perf:G1,max:G1+' -XX:+AlwaysPreTouch'};
+const BOOST=['Fabric API','Sodium','Lithium','FerriteCore','ModernFix','Entity Culling','ImmediatelyFast','More Culling','Dynamic FPS','Sodium Extra'];
+const DEF={loader:'fabric',mods:true,gfx:true,rd:10,sd:8,fps:260,vsync:false,shadows:false,fancy:false,particles:'1',ram:4,preset:'perf',custom:'',java:'auto',javaPath:'',w:854,h:480,full:false,after:'keep',theme:'auto',cf:'',snap:false,mc:'',acc:'premium',nick:'',hk:true,hkKey:'ShiftRight'};
+const PROF={
+ max:{rd:6,sd:5,fps:260,vsync:false,shadows:false,fancy:false,particles:'2',mods:true,gfx:true,preset:'max'},
+ bal:{rd:10,sd:8,fps:260,vsync:false,shadows:false,fancy:false,particles:'1',mods:true,gfx:true,preset:'perf'},
+ qual:{rd:16,sd:12,fps:260,vsync:true,shadows:true,fancy:true,particles:'0',mods:true,gfx:true,preset:'perf'}};
+let S={...DEF};try{S={...DEF,...JSON.parse(localStorage.getItem('xnq')||'{}')}}catch(e){}
+const save=()=>{try{localStorage.setItem('xnq',JSON.stringify(S))}catch(e){}try{api.hotkey({on:S.hk,key:S.hkKey})}catch(e){}};
+const st={src:'modrinth',cat:'',view:'browse',vers:[],latest:'',tab:'boost',sys:8,done:new Set()};
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),3800)}
+function theme(){if(S.theme==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=S.theme}
+function ctx(){$('#ctxTag').textContent=`${NAMES[S.loader]} • ${S.mc||''}`}
+function go(p){$$('.nav,main>section').forEach(e=>e.classList.remove('on'));$(`[data-p=${p}]`).classList.add('on');$('#'+p).classList.add('on');ctx();
+ if(p==='mods'&&st.view==='browse'&&!$('#results').children.length)search();if(p==='set')renderSet()}
+$$('.nav').forEach(b=>b.onclick=()=>go(b.dataset.p));
+function seg(sel,get,set){const g=$(sel),paint=()=>g.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===get()));
+ g.querySelectorAll('button').forEach(b=>b.onclick=()=>{set(b.dataset.v);paint()});paint()}
+
+/* WERSJE */
+function fillVersions(){const l=st.vers.filter(v=>S.snap||v.type==='release');const cur=S.mc&&l.some(v=>v.id===S.mc)?S.mc:st.latest;S.mc=cur;
+ $('#ver').innerHTML=l.map(v=>`<option value="${esc(v.id)}">${esc(v.id)}${v.id===st.latest?' (najnowsza)':v.type==='snapshot'?' (snapshot)':''}</option>`).join('');$('#ver').value=cur;ctx()}
+$('#ver').onchange=e=>{S.mc=e.target.value;save();$('#results').innerHTML='';ctx()};
+(async()=>{try{const v=await api.versions();st.vers=v.list;st.latest=v.latest;fillVersions()}catch(e){toast('Nie udało się pobrać listy wersji. Sprawdź internet.')}
+ try{st.sys=await api.sysram()}catch(e){}})();
+
+/* LOGOWANIE + GRAJ */
+function setAcc(a){st.acc=a;$('#accName').textContent=a.name+(a.offline?' (offline)':'');$('#loginBtn').textContent='Zmień konto';$('#welcome').classList.remove('open')}
+const openWelcome=()=>{$('#wNick').value=S.nick||'';$('#welcome').classList.add('open')};
+$('#loginBtn').onclick=openWelcome;$('#wClose').onclick=()=>$('#welcome').classList.remove('open');
+async function msLogin(){try{toast('Otwieram okno logowania Microsoft…');const a=await api.login();S.acc='premium';save();setAcc(a);toast('Zalogowano: '+a.name)}catch(e){toast('Logowanie nie powiodło się. Upewnij się, że konto ma Minecrafta Java.')}}
+async function useNick(nick){try{const a=await api.offline({name:(nick||'').trim()});S.acc='offline';S.nick=a.name;save();setAcc(a);toast('Gramy jako '+a.name)}catch(e){toast(clean(e))}}
+async function logout(){await api.logout();st.acc=null;$('#accName').textContent='Brak konta';$('#loginBtn').textContent='Zaloguj się';if(st.tab==='konta')renderSet();toast('Wylogowano.')}
+$('#wPrem').onclick=msLogin;$('#wOff').onclick=()=>useNick($('#wNick').value);
+(async()=>{let a=null;try{a=S.acc==='offline'&&S.nick?await api.offline({name:S.nick}):S.acc==='premium'?await api.restore():null}catch(e){}if(a)setAcc(a);else openWelcome()})();
+$('#playBtn').onclick=async()=>{if(!st.acc){openWelcome();return}const b=$('#playBtn');b.disabled=true;b.textContent='START…';
+ const jvm=(S.preset==='own'?S.custom:JVM[S.preset]).split(/\s+/).filter(Boolean);
+ clog(`▶ Start: wersja ${S.mc} • silnik ${S.loader} • RAM ${S.ram} GB • JVM: ${S.preset} • FPS Boost: ${S.mods?'tak':'nie'}`);
+ try{await api.play({mc:S.mc,loader:S.loader,ram:S.ram,javaPath:S.java==='own'?S.javaPath:'',jvm,width:S.w,height:S.h,fullscreen:S.full,after:S.after,
+  mods:S.mods,gfx:S.gfx,rd:S.rd,sd:S.sd,fps:S.fps,vsync:S.vsync,shadows:S.shadows,fancy:S.fancy,particles:S.particles})}
+ catch(e){toast(clean(e));$('#status').textContent='Coś poszło nie tak.';clog('Błąd: '+clean(e),'cerr');conToggle(true)}
+ b.disabled=false;b.textContent='GRAJ'};
+const conOut=$('#conOut');let conLines=0;
+function clog(m,cls){const t=new Date().toTimeString().slice(0,8);const s=document.createElement('div');if(cls)s.className=cls;s.textContent=`[${t}] ${m}`;
+ conOut.appendChild(s);if(++conLines>1500){conOut.firstChild.remove();conLines--}conOut.scrollTop=conOut.scrollHeight;$('#conN').textContent=conLines+' linii'}
+function conToggle(o){const c=$('#con');const on=o??!c.classList.contains('open');c.classList.toggle('open',on);$('#conT').setAttribute('aria-expanded',on);$('#conT span').textContent=(on?'▾':'▸')+' Konsola';conOut.scrollTop=conOut.scrollHeight}
+$('#conT').onclick=()=>conToggle();
+$('#conClr').onclick=()=>{conOut.innerHTML='';conLines=0;$('#conN').textContent=''};
+$('#conCopy').onclick=async()=>{try{await navigator.clipboard.writeText(conOut.innerText);toast('Skopiowano konsolę.')}catch(e){toast('Nie udało się skopiować.')}};
+clog('Vexora Launcher gotowy.','cdim');
+api.onLog(o=>{o=typeof o==='string'?{m:o}:o;if(!o.raw)$('#status').textContent=o.m.slice(0,90);clog(o.m,o.raw?'cdim':'')});
+api.onProgress(p=>{$('#barFill').style.width=p+'%'});
+
+/* MODY */
+const needKey=()=>st.src==='curseforge'&&!S.cf;
+seg('#src',()=>st.src,v=>{st.src=v;$('#cats').style.display=v==='curseforge'?'none':'';$('#results').innerHTML='';search()});
+$('#mineBtn').onclick=()=>{st.view=st.view==='mine'?'browse':'mine';$('#browse').style.display=st.view==='browse'?'':'none';$('#mine').style.display=st.view==='mine'?'':'none';$('#mineBtn').textContent=st.view==='mine'?'← Wróć':'Zainstalowane';st.view==='mine'?loadMine():search()};
+$('#ctxTag').onclick=()=>{st.tab='gra';go('set')};
+$('#cats').innerHTML=CATS.map(([v,n])=>`<button class="chip${v===st.cat?' on':''}" data-c="${v}">${n}</button>`).join('');
+$$('#cats .chip').forEach(c=>c.onclick=()=>{$$('#cats .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');st.cat=c.dataset.c;search()});
+async function search(){const r=$('#results');
+ if(needKey()){r.innerHTML='<div class="empty">CurseForge wymaga darmowego klucza API.<br><button class="btn" id="toKey">Dodaj klucz w Ustawieniach</button></div>';$('#toKey').onclick=()=>{st.tab='konta';go('set')};return}
+ r.innerHTML='<p class="empty">Szukam modów…</p>';
+ try{const hits=await api.search({source:st.src,query:$('#q').value.trim(),loader:S.loader,mc:S.mc,cat:st.cat,sort:$('#q').value.trim()?'relevance':'downloads',cfKey:S.cf});
+  if(!hits.length){r.innerHTML='<p class="empty">Nic nie znaleziono. Zmień frazę, silnik lub wersję.</p>';return}
+  r.innerHTML=hits.map(h=>{const k=st.src+h.id,d=st.done.has(k);return `<div class="card">
+   ${h.icon?`<img class="ic" src="${esc(h.icon)}" alt="">`:`<div class="ic">${esc(h.title[0])}</div>`}
+   <div class="bd"><div class="t">${esc(h.title)}</div><p>${esc(h.desc)}</p>
+   <div class="foot"><span class="meta">${esc(h.author)} • ${Intl.NumberFormat('pl-PL').format(h.downloads)} pobrań</span>
+   ${(h.cats||[]).filter(c=>CATPL[c]).slice(0,2).map(c=>`<span class="pill">${CATPL[c]}</span>`).join('')}
+   <button class="btn sm${d?' ok':''}" data-id="${esc(h.id)}">${d?'Pobrano':'Pobierz'}</button></div></div></div>`}).join('');
+  r.querySelectorAll('.btn').forEach(b=>b.onclick=async()=>{const k=st.src+b.dataset.id;if(st.done.has(k))return;b.disabled=true;b.textContent='Pobieram…';
+   try{const f=await api.install({source:st.src,id:b.dataset.id,loader:S.loader,mc:S.mc,cfKey:S.cf});st.done.add(k);b.disabled=false;b.className='btn sm ok';b.textContent='Pobrano';toast(`Zapisano: ${f}`)}
+   catch(e){b.disabled=false;b.textContent='Pobierz';toast(clean(e))}})
+ }catch(e){r.innerHTML=`<p class="empty">${esc(clean(e))}</p>`}}
+$('#searchBtn').onclick=search;$('#q').onkeydown=e=>{if(e.key==='Enter')search()};
+async function loadMine(){const l=await api.installed({loader:S.loader,mc:S.mc});const m=$('#mineList');
+ m.innerHTML=l.length?l.map(f=>`<div class="it"><span>${esc(f)}</span><button class="btn bad sm" data-f="${esc(f)}">Usuń</button></div>`).join(''):`<p class="empty">Brak modów dla ${NAMES[S.loader]} ${esc(S.mc)}.</p>`;
+ m.querySelectorAll('button').forEach(b=>b.onclick=async()=>{await api.removeMod({loader:S.loader,mc:S.mc,file:b.dataset.f});loadMine()})}
+$('#openBtn').onclick=()=>api.openFolder({loader:S.loader,mc:S.mc});
+
+/* USTAWIENIA */
+const TABS=[['boost','⚡ FPS Boost'],['java','Java i RAM'],['gra','Gra'],['wyglad','Wygląd'],['konta','Konto']];
+const sl=(k,t,d,min,max,u)=>`<div class="srow"><div><b>${t}</b><div class="note" style="color:var(--muted);font-size:.84rem">${d}</div></div><span class="val" id="v-${k}">${S[k]}${u}</span><input type="range" data-k="${k}" data-u="${u}" min="${min}" max="${max}" value="${S[k]}" aria-label="${t}"></div>`;
+const tg=(k,t,d)=>`<div class="tr"><div><b>${t}</b><small>${d}</small></div><button class="tg${S[k]?' on':''}" data-t="${k}" role="switch" aria-checked="${S[k]}" aria-label="${t}"></button></div>`;
+const ch=(k,o)=>`<div class="chips" data-c="${k}">${o.map(([v,n])=>`<button class="chip${String(S[k])===String(v)?' on':''}" data-v="${v}">${n}</button>`).join('')}</div>`;
+const box=(t,d,b)=>`<div class="box"><h3>${t}</h3><div class="d">${d}</div>${b}</div>`;
+function renderSet(){
+ $('#stabs').innerHTML=TABS.map(([v,n])=>`<button class="chip${v===st.tab?' on':''}" data-tab="${v}">${n}</button>`).join('');
+ const P={
+ boost:`<div class="profiles">
+   <button class="prof gold" data-prof="max"><b>🚀 Maksymalne FPS</b><span>Niski zasięg, minimum efektów, wszystkie mody od wydajności.</span></button>
+   <button class="prof" data-prof="bal"><b>⚖️ Zbalansowany</b><span>Dobry kompromis między grafiką a płynnością.</span></button>
+   <button class="prof" data-prof="qual"><b>✨ Jakość</b><span>Ładna grafika, nadal z optymalizacjami.</span></button></div>`
+  +box('Automatyczne mody od FPS','Przy każdym starcie na Fabric launcher dobiera je do wersji gry (jeśli są dostępne).',
+   `<div class="modlist">${BOOST.map(m=>`<span>${m}</span>`).join('')}</div>`+tg('mods','Włącz automatyczne mody','Działa na silniku Fabric. Zwykle daje kilkukrotnie więcej FPS.'))
+  +box('Grafika','Wartości zapisywane do options.txt przed każdym startem.',
+   tg('gfx','Optymalizuj ustawienia grafiki','Launcher ustawia poniższe wartości za Ciebie.')
+   +`<div style="margin-top:14px">${sl('rd','Zasięg renderowania','Mniej chunków to dużo więcej FPS.',2,32,' ch.')}${sl('sd','Zasięg symulacji','Odległość, w której działają moby i maszyny.',5,32,' ch.')}${sl('fps','Limit FPS','260 = bez limitu.',30,260,'')}</div>`
+   +`<div class="lbl" style="margin:4px 0 6px;font-weight:700">Cząsteczki</div>`+ch('particles',[['0','Wszystkie'],['1','Zmniejszone'],['2','Minimalne']])
+   +`<div style="margin-top:12px">${tg('vsync','VSync','Wyłączony daje więcej FPS, ale możliwe rwanie obrazu.')}${tg('shadows','Cienie jednostek','Wyłączone to więcej FPS.')}${tg('fancy','Ładna grafika','Wolniejsza. Włącz tylko na mocnym PC.')}</div>`),
+ java:box('Pamięć RAM',`Masz ${st.sys} GB w komputerze.`,sl('ram','Przydzielona pamięć','Za dużo RAM-u też spowalnia grę. Zostaw wolne 3–4 GB dla systemu.',1,Math.max(4,Math.min(32,st.sys)),' GB')+`<button class="btn sec sm" id="recRam">Ustaw zalecane (${recRam()} GB)</button>`)
+  +box('Argumenty JVM','„Wydajność” to dopracowany G1GC (mniej przycięć). „Maksymalna” dodatkowo rezerwuje całą pamięć na starcie.',
+   ch('preset',[['std','Standardowe'],['perf','Wydajność'],['max','Maksymalna'],['own','Własne']])+(S.preset==='own'?`<textarea data-k="custom" aria-label="Własne argumenty JVM" placeholder="-XX:+UseG1GC">${esc(S.custom)}</textarea>`:`<textarea readonly aria-label="Podgląd argumentów">${esc(JVM[S.preset]||'(brak dodatkowych argumentów)')}</textarea>`))
+  +box('Java','Domyślnie launcher sam pobiera właściwą Javę do wybranej wersji gry.',ch('java',[['auto','Automatycznie'],['own','Własna ścieżka']])+(S.java==='own'?`<input type="text" data-k="javaPath" value="${esc(S.javaPath)}" placeholder="C:\\Program Files\\Java\\jdk-25\\bin\\javaw.exe" style="margin-top:10px" aria-label="Ścieżka do Javy">`:'')),
+ gra:box('Silnik modów','Fabric ma najwięcej modów od FPS. Forge i NeoForge: instalator dojdzie później.',ch('loader',[['fabric','Fabric'],['vanilla','Vanilla'],['forge','Forge'],['neoforge','NeoForge']]))
+  +box('Okno gry','',`<div class="two"><input type="number" data-k="w" value="${S.w}" min="640" aria-label="Szerokość"><span>×</span><input type="number" data-k="h" value="${S.h}" min="360" aria-label="Wysokość"></div><div style="margin-top:12px">${tg('full','Pełny ekran','Gra startuje na cały ekran.')}</div>`)
+  +box('Menu launchera w grze','Gdy gra działa, ten klawisz wysuwa launcher na wierzch (jak menu w Lunarze). Naciśnij go ponownie, aby ukryć.',
+   tg('hk','Włącz skrót','Działa tylko podczas gry.')+`<div style="margin-top:12px">${ch('hkKey',[['ShiftRight','Prawy Shift'],['CtrlRight','Prawy Ctrl'],['Insert','Insert'],['F6','F6'],['Shift','Lewy Shift']])}</div>`
+   +(S.hkKey==='Shift'?'<div class="warn">Lewy Shift to skradanie w Minecrafcie. Launcher będzie wyskakiwał przy każdym skradaniu. Zalecamy Prawy Shift.</div>':'')
+   +'<div class="warn">Najlepiej działa w grze w oknie lub w oknie bez ramek. W pełnym ekranie system może schować launcher.</div>')
+  +box('Launcher','',ch('after',[['keep','Zostaw otwarty po starcie gry'],['min','Zminimalizuj po starcie gry']])+`<div style="margin-top:12px">${tg('snap','Pokaż snapshoty','Wersje testowe w liście wersji.')}</div>`),
+ wyglad:box('Motyw','Tak jak na stronie sklepu: zielony, jasny lub ciemny.',ch('theme',[['auto','Auto'],['light','Jasny'],['dark','Ciemny']]))
+  +box('Dane','Wersje gry, mody i zapisy są w folderze launchera.',`<div class="chips"><button class="btn sec sm" id="openData">Otwórz folder launchera</button><button class="btn bad sm" id="reset">Przywróć domyślne</button></div>`),
+ konta:box('Konto','Wybierz, jak chcesz grać.',ch('acc',[['premium','Premium (Microsoft)'],['offline','Offline (sam nick)']])+(S.acc==='offline'?`<input type="text" data-k="nick" value="${esc(S.nick)}" maxlength="16" placeholder="Twój nick (3–16 znaków)" style="margin-top:10px" aria-label="Nick"><button class="btn" id="useNick" style="margin-top:10px">Użyj nicku</button><div class="warn">Konta offline nie wejdą na serwery premium (online-mode), działają w grze jednoosobowej i na serwerach no-premium.</div>`:`<button class="btn" id="msLogin" style="margin-top:10px">Zaloguj przez Microsoft</button>`)+(st.acc?`<button class="btn sec sm" id="logout" style="margin:10px 0 0 8px">Wyloguj</button>`:''))
+  +box('CurseForge — klucz API','Darmowy klucz wygenerujesz na console.curseforge.com. Jest potrzebny tylko do wyszukiwania i pobierania modów z CurseForge.',
+   `<input type="password" data-k="cf" value="${esc(S.cf)}" placeholder="Wklej klucz API" aria-label="Klucz API CurseForge" autocomplete="off"><div class="warn">Część modów blokuje pobieranie spoza CurseForge. Dla nich zobaczysz komunikat, a mod pobierzesz ze strony.</div>`)};
+ $('#setBody').innerHTML=P[st.tab]}
+function recRam(){return Math.max(2,Math.min(8,Math.round(st.sys*.4)))}
+const sb=$('#setBody');
+$('#stabs').onclick=e=>{const b=e.target.closest('[data-tab]');if(b){st.tab=b.dataset.tab;renderSet()}};
+sb.addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(!k)return;S[k]=t.type==='range'||t.type==='number'?+t.value:t.value;save();
+ if(t.type==='range')$('#v-'+k).textContent=t.value+t.dataset.u});
+sb.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.prof){Object.assign(S,PROF[t.dataset.prof]);save();renderSet();toast('Zastosowano profil.');return}
+ if(t.dataset.t){S[t.dataset.t]=!S[t.dataset.t];save();if(t.dataset.t==='snap')fillVersions();renderSet();return}
+ const g=t.closest('[data-c]');if(g){const k=g.dataset.c;S[k]=t.dataset.v;save();if(k==='theme')theme();if(k==='loader'){ctx();$('#results').innerHTML='';}renderSet();return}
+ if(t.id==='msLogin')return msLogin();if(t.id==='useNick')return useNick(S.nick);if(t.id==='logout')return logout();if(t.id==='recRam'){S.ram=recRam();save();renderSet()}
+ if(t.id==='openData')api.openFolder({loader:'vanilla',mc:''});
+ if(t.id==='reset'){S={...DEF,mc:S.mc};save();theme();renderSet();toast('Przywrócono ustawienia domyślne.')}});
+theme();ctx();try{api.hotkey({on:S.hk,key:S.hkKey})}catch(e){}
+</script>
+</body>
+</html>
