@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "vexora_client",
+  "version": "${version}",
+  "name": "Vexora Client",
+  "description": "Wbudowane menu i HUD Vexora (FPS, CPS, klawisze, zbroja, koordynaty, ping, efekty).",
+  "authors": ["Vexora"],
+  "environment": "client",
+  "entrypoints": { "client": ["pl.vexora.client.VexoraClient"] },
+  "depends": { "fabricloader": ">=0.16.0", "minecraft": "~1.21.4", "java": ">=21", "fabric-api": "*" }
+}
